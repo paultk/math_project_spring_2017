@@ -64,6 +64,10 @@ def fun1(estimate, coordinate_matrix):
 
 
 def calculate_coordinates():
+    """
+
+    :return:
+    """
     spc1 = [26570, np.divide(np.pi, 9), np.divide(np.pi, 3)]
     spc2 = [26570, np.divide(np.pi, 7), np.pi]
     spc3 = [26570, np.divide(np.pi, 5), 3*(np.divide(np.pi, 2))]
@@ -82,8 +86,20 @@ def calculate_coordinates():
 
     return np.array(coordinate_matrix).astype(np.float64)
 
+#  gir maksimal posisjonsfeil
+
 
 def max_output_error(coordinate_matrix,  start_estimate, actual_xyz, e, newton_iterations):
+    """
+Gir
+    :param coordinate_matrix:
+    :param start_estimate:
+    :param actual_xyz:
+    :param e:
+    :param newton_iterations:
+    :return:
+    """
+
     error_list = []
 
     for i in range(-1, 3, 2):
@@ -101,6 +117,16 @@ def max_output_error(coordinate_matrix,  start_estimate, actual_xyz, e, newton_i
 
 
 def add_timing_error(coordinate_matrix, e1, e2, e3, e4):
+    """
+
+    :param coordinate_matrix:
+    :param e1:
+    :param e2:
+    :param e3:
+    :param e4:
+    :return:
+    """
+
     coordinate_matrix[0, 3] += e1
     coordinate_matrix[1, 3] += e2
     coordinate_matrix[2, 3] += e3
@@ -110,6 +136,14 @@ def add_timing_error(coordinate_matrix, e1, e2, e3, e4):
 
 
 def multi_newton(estimate, coordinate_matrix, number_of_iterations):
+    """
+
+    :param estimate:
+    :param coordinate_matrix:
+    :param number_of_iterations:
+    :return:
+    """
+
     return_list = fun1(estimate, coordinate_matrix)
     print(return_list[0])
     print(return_list[1])
@@ -119,6 +153,7 @@ def multi_newton(estimate, coordinate_matrix, number_of_iterations):
         estimate = np.subtract(estimate, s)
         return_list = fun1(estimate, coordinate_matrix)
     return estimate
+
 
 e = pow(10, -8)
 coordinates = calculate_coordinates()

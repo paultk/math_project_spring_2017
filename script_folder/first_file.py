@@ -1,5 +1,5 @@
 import numpy as np
-import sympy as scipy
+from sympy import *
 #from sci import scipy as scipi
 
 
@@ -17,9 +17,17 @@ d = −3.201566 × 10−3 seconds.
 # ikke vits i aa sammenligne svar fra 5 og 6
 # lønte det seg å ha 5-8 sattelitter
 
+speed_of_light = 299792.458
+estimate1 = np.array([0, 0, 6370, 0])
+matr1 = np.array([15600,7540,20140, 0.07074]).astype(np.float64)
+matr2 = np.array([18760,2750,18610, 0.07220]).astype(np.float64)
+matr3 = np.array([17610,14630,13480, 0.07690]).astype(np.float64)
+matr4 = np.array([19170,610,18390,0.07242]).astype(np.float64)
+coordinates_matrix = Matrix([matr1, matr2, matr3, matr4])
+
 
 # Task 1
-def fun1(estimate, coordinate_matrix):
+def jacobimizer(estimate, coordinate_matrix):
 
     #  function_value_list = np.zeros(4).astype(np.float64)
     function_value_list = np.zeros(len(coordinate_matrix)).astype(np.float64)
@@ -28,7 +36,6 @@ def fun1(estimate, coordinate_matrix):
     jacobi_matrix = np.zeros((len(coordinate_matrix), 4)).astype(np.float64)
     print("Jacobi matrix: {}".format(jacobi_matrix))
 
-    speed_of_light = 299792.458
     print("Speed of light: {}".format(speed_of_light))
 
     #  squared_vals = np.zeros(4).astype(np.float64)
@@ -119,6 +126,178 @@ pc10 = [rho, phi9, theta11]
 pc11 = [rho, phi11, theta10]
 
 
+def task_2():
+    c = coordinates_matrix
+    Ux = zeros(3, 1)
+    Uy = zeros(3, 1)
+    Uz = zeros(3, 1)
+    w = zeros(3, 1)
+    D = zeros(3, 1)
+
+    # (a-b) **2 = a ** 2 - 2ab + b ** 2
+    # x1, y1 z1 & d1 subtracted in second quadratic sentence : 2(b)
+    for i in range(0,3):
+        Ux[i] = 2 * (c[i + 1, 0] - c[0, 0])
+        Uy[i] = 2 * (c[i + 1, 1] - c[0, 1])
+        Uz[i] = 2 * (c[i + 1, 2] - c[0, 2])
+        D[i] = 2 * ((speed_of_light ** 2) * (c[0, 3] - c[i + 1, 3]))
+
+    # w = b ** 2
+    for i in range(0, 3):
+        w[i] = c[0, 0] **2 - \
+               c[i + 1, 0] **2 + c[0, 1] ** 2 - \
+               c[i + 1, 1] **2 +c[0, 2] ** 2 - \
+               c[i + 1, 2] **2 + (speed_of_light ** 2 * c[i + 1, 3] **2) - \
+               (speed_of_light **2 * c[0, 3] ** 2)
+
+    # z
+    # for i in range(3):
+
+
+    # solve for x in terms of D
+    Xcol = np.array([Uy, Uz, Ux]).astype(np.float64)
+    Dcol = np.array([Uy, Uz, D]).astype(np.float64)
+    Wcol = np.array([Uy, Uz, w]).astype(np.float64)
+
+    # determinant of x, d & w
+    Xdeterminent = np.linalg.det(Xcol)
+    Ddeterminent = np.linalg.det(Dcol)
+    Wdeterminent = np.linalg.det(Wcol)
+
+
+
+    # solve for y
+    Ycol = np.array([Ux, Uz, Uy]).astype(np.float64)
+    D2col = np.array([Ux, Uz, D]).astype(np.float64)
+    W2col = np.array([Ux, Uz, w]).astype(np.float64)
+
+    Ydeterminant = np.linalg.det(Ycol)
+    D2determinant = np.linalg.det(D2col)
+    W2determinant = np.linalg.det(W2col)
+
+
+    # solve for z col
+    Zcol = np.array([Ux, Uy, Uz]).astype(np.float64)
+    D3col = np.array([Ux, Uy, D]).astype(np.float64)
+    W3col = np.array([Ux, Uy, w]).astype(np.float64)
+
+    zDeterminent = np.linalg.det(Zcol)
+    D3Determinent = np.linalg.det(D3col)
+    W3Determinent = np.linalg.det(W3col)
+
+
+    # quadratic equation variables
+    quadratic_a = (Ddeterminent/Xdeterminent) ** 2 + (D2determinant / Ydeterminant) ** 2 + (D3Determinent / zDeterminent) ** 2 - \
+          speed_of_light ** 2
+    quadratic_b = 2 * (Ddeterminent / Xdeterminent) * (Wdeterminent / Xdeterminent + c[0, 0]) + 2 * (D2determinant / Ydeterminant) * \
+                                                                              (W2determinant / Ydeterminant + c[0,1]) + 2 * (D3Determinent / zDeterminent) * (W3Determinent / zDeterminent +c[0, 2]) + \
+          2 * speed_of_light ** 2 * c[0, 3]
+    quadratic_c = (Wdeterminent / Xdeterminent + c[0, 0]) ** 2 + (W2determinant / Ydeterminant + c[0, 1]) ** 2 + (W3Determinent / zDeterminent + c[0, 2]) ** 2 - speed_of_light **2 *c[0,3] ** 2
+
+
+    if quadratic_b > 0:
+        d1 = - ( quadratic_b + sqrt( quadratic_b ** 2 - 4 * quadratic_a * quadratic_c)) / (2 * quadratic_a)
+        d2 = - ( 2 * quadratic_c) / ( quadratic_b + sqrt( quadratic_b ** 2 - 4 * quadratic_a * quadratic_c))
+    else:
+        d1 = - ( quadratic_b + sqrt( quadratic_b ** 2 - 4 * quadratic_a * quadratic_c)) / (2 * quadratic_a)
+        d2 = - ( 2 * quadratic_c) / (- quadratic_b + sqrt( quadratic_b ** 2 - 4 * quadratic_a * quadratic_c))
+
+    x1 = -(Wdeterminent / Xdeterminent + (Ddeterminent / Xdeterminent) * d1)
+
+    x2 = -(Wdeterminent / Xdeterminent + (Ddeterminent / Xdeterminent) * d2)
+
+    y1 = -(W2determinant / Ydeterminant + (D2determinant / Ydeterminant) * d1)
+    y2 = -(W2determinant / Ydeterminant + (D2determinant / Ydeterminant) * d2)
+
+    z1 = -(W3Determinent / zDeterminent + (D3Determinent / zDeterminent) * d1)
+    z2 = -(W3Determinent / zDeterminent + (D3Determinent / zDeterminent) * d2)
+
+    answ1 = np.array([x1, y1, z1, d1])
+    answ2 = np.array([x2, y2, z2, d2])
+    print('asnwer 1')
+    print(answ1)
+    print('answer 2')
+    print(answ2)
+
+
+def task_3():
+
+    d = symbols('d')
+    c = coordinates_matrix
+    Ux = zeros(3, 1)
+    Uy = zeros(3, 1)
+    Uz = zeros(3, 1)
+    w = zeros(3, 1)
+    D = zeros(3, 1)
+
+    for i in range(0,3):
+        Ux[i] = 2 * c[i + 1, 0] - 2 * c[0, 0]
+        Uy[i] = 2 * c[i + 1, 1] - 2 * c[0, 1]
+        Uz[i] = 2 * c[i + 1, 2] - 2 * c[0, 2]
+        D[i] = 2 * ((speed_of_light ** 2) * (c[0, 3] - c[i + 1, 3]))
+
+        w[i] = c[0, 0] **2 -\
+               c[i + 1, 0] **2 + c[0, 1] **2 -\
+                c[i + 1, 1] **2 +c[0, 2] **2 -\
+                c[i + 1, 2] **2 + (speed_of_light **2 * c[i + 1, 3] **2) -\
+               (speed_of_light **2 * c[0,3] **2)
+
+    # solve for x in terms of D
+    Xcol = np.array([Uy, Uz, Ux]).astype(np.float64)
+    Dcol = np.array([Uy, Uz, D]).astype(np.float64)
+    Wcol = np.array([Uy, Uz, w]).astype(np.float64)
+
+    # det of x, d & w
+    Xdeterminent = np.linalg.det(Xcol)
+    Ddeterminent = np.linalg.det(Dcol)
+    Wdeterminent = np.linalg.det(Wcol)
+
+    # solve for y
+    Ycol = np.array([Ux, Uz, Uy]).astype(np.float64)
+    D2col = np.array([Ux, Uz, D]).astype(np.float64)
+    W2col = np.array([Ux, Uz, w]).astype(np.float64)
+
+    Ydet = np.linalg.det(Ycol)
+    D2det = np.linalg.det(D2col)
+    W2det = np.linalg.det(W2col)
+
+    # solve for z col
+    Zcol = np.array([Ux, Uy, Uz]).astype(np.float64)
+    D3col = np.array([Ux, Uy, D]).astype(np.float64)
+    W3col = np.array([Ux, Uy, w]).astype(np.float64)
+
+    zDeterminent = np.linalg.det(Zcol)
+    D3Determinent = np.linalg.det(D3col)
+    W3Determinent = np.linalg.det(W3col)
+
+    # x, y, z = symbols('x y z')
+    x = (-d * Ddeterminent - Wdeterminent) / Xdeterminent
+    y = (-d * D2det - W2det) / Ydet
+    z = (-d * D3Determinent - W3Determinent) / zDeterminent
+
+    expression = ((x - c[0, 0]) ** 2 + (y - c[0, 1]) ** 2 + (z - c[0, 2]) ** 2 - (speed_of_light * (c[0, 3] - d)) ** 2)
+    roots = solve(expression, d)
+
+    root1 = roots[0]
+    root2 = roots[1]
+
+    x1 = x.subs(d, root1)
+    y1 = y.subs(d, root1)
+    z1 = z.subs(d, root1)
+
+    x2 = x.subs(d, root2)
+    y2 = y.subs(d, root2)
+    z2 = z.subs(d, root2)
+
+    print('x1 ' + str(x1))
+    print('y1 ' + str(y1))
+    print('z1 ' + str(z1))
+    print('d1' + str(root1))
+
+    print('x2 ' + str(x2))
+    print('y2 ' + str(y2))
+    print('z2 ' + str(z2))
+    print('d2 ' + str(root2))
 
 
 def calculate_coordinates2(spc_list):
@@ -222,14 +401,14 @@ def multi_newton(estimate, coordinate_matrix, number_of_iterations):
     :return:
     """
 
-    return_list = fun1(estimate, coordinate_matrix)
+    return_list = jacobimizer(estimate, coordinate_matrix)
     # print(return_list[0])
     # print(return_list[1])
     for i in range(0, number_of_iterations):
         #  s = np.linalg.solve(return_list[1], return_list[0])  !!!!!!
         x = np.linalg.lstsq(return_list[1], return_list[0])
         estimate = np.subtract(estimate, x[0])
-        return_list = fun1(estimate, coordinate_matrix)
+        return_list = jacobimizer(estimate, coordinate_matrix)
     return estimate
 
 
@@ -335,3 +514,8 @@ print(akt1_result)
 # result = np.divide(output_error, input_error)
 # print("{}km / {}km = {}".format(output_error, input_error, result))
 # print(calculate_coordinates2(spc_list))
+
+print('\noppgave 2')
+task_2()
+print('\noppgave 3')
+task_3()

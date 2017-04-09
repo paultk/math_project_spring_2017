@@ -1,9 +1,7 @@
 import numpy as np
 import sympy as scipy
 #from sci import scipy as scipi
-print("hello world")
-a = np.array([1,2,3])
-print(a)
+
 
 '''Solve the system (4.37) by using Multivariate Newtons Method. Find the receiver position
 (x, y, z) near earth and time correction d for known, simultaneous satellite positions
@@ -23,31 +21,41 @@ d = −3.201566 × 10−3 seconds.
 # Task 1
 def fun1(estimate, coordinate_matrix):
 
-    function_value_list = np.zeros(4).astype(np.float64)
+    #  function_value_list = np.zeros(4).astype(np.float64)
+    function_value_list = np.zeros(len(coordinate_matrix)).astype(np.float64)
+    print("Function value list: {}".format(function_value_list))
+
     jacobi_matrix = np.zeros((len(coordinate_matrix), 4)).astype(np.float64)
+    print("Jacobi matrix: {}".format(jacobi_matrix))
 
     speed_of_light = 299792.458
+    print("Speed of light: {}".format(speed_of_light))
 
-    squared_vals = np.zeros(4).astype(np.float64)
+    #  squared_vals = np.zeros(4).astype(np.float64)
+    squared_vals = np.zeros(len(coordinate_matrix)).astype(np.float64)
+    print("Squared vals: {}".format(squared_vals))
+
     for i in range(0, len(coordinate_matrix)):
+        print("Line 39: {}".format(i))
         temp_sqrt_list = np.zeros(4).astype(np.float64)
         for j in range(0, 3):
             temp_sqrt_list[j] = (np.power((estimate[j] - coordinate_matrix[i][j]), 2))
-        #  print(temp_sqrt_list)
+            print("temp_sqrt_list: {}".format(temp_sqrt_list))
         squared_vals[i] = (np.sqrt(sum(temp_sqrt_list)))
+        print("Squared vals: {}".format(squared_vals))
 
-    for i in range(4):
-        function_value_list[i] = (squared_vals[i] + speed_of_light * (estimate[3] - coordinate_matrix[i][3]))
     for i in range(len(coordinate_matrix)):
-        temp_func_list = []
-        for j in range(len(coordinate_matrix)):
+        function_value_list[i] = (squared_vals[i] + speed_of_light * (estimate[3] - coordinate_matrix[i][3]))
+        print("function value list: {}".format(function_value_list))
+    for i in range(len(coordinate_matrix)):
+        for j in range(4):
             if j == 3:
                 jacobi_matrix[i][j] = speed_of_light
             else:
-                jacobi_matrix[i][j] = ((estimate[i] - coordinate_matrix[i][j]) / squared_vals[i])
-    #  print(function_value_list)
-    #  print('finish')
+                jacobi_matrix[i][j] = ((estimate[j] - coordinate_matrix[i][j]) / squared_vals[i])
+            print("ij:{}{}, Jacobi:\n{}".format(i, j, jacobi_matrix))
 
+    print("------END------")
     return [function_value_list, jacobi_matrix]
 
 # t1 = 0.083876
@@ -61,19 +69,64 @@ def fun1(estimate, coordinate_matrix):
 # matr3 = np.array([0, -21496, 15617, t3]).astype(np.float64)
 # matr4 = np.array([13285, 0, 23010, t4]).astype(np.float64)
 # coordinates_matrix = np.array([matr1, matr2, matr3, matr4]).astype(np.float64)
+phi1 = np.divide(np.pi, 9)
+phi2 = np.divide(np.pi, 7)
+phi3 = np.divide(np.pi, 5)
+phi4 = np.divide(np.pi, 3)
+phi5 = np.divide(np.pi, 6)
+phi6 = np.divide(np.pi, 4)
+phi7 = np.divide(np.pi, 2)
+phi8 = 3*np.divide(np.pi, 10)
+phi9 = 3*np.divide(np.pi, 11)
+phi10 = 5*np.divide(np.pi, 11)
+phi11 = 5*np.divide(np.pi, 12)
+
+theta1 = np.divide(np.pi, 3)
+theta2 = np.pi
+theta3 = 3 * np.divide(np.pi, 2)
+theta4 = 2 * np.pi
+theta5 = np.divide(np.pi, 2)
+theta6 = np.divide(np.pi, 5)
+theta7 = np.divide(np.pi, 7)
+theta8 = 4*np.divide(np.pi, 3)
+theta9 = 5*np.divide(np.pi, 4)
+theta10 = 6*np.divide(np.pi, 5)
+theta11 = 7*np.divide(np.pi, 5)
+rho = 26570
+
+spc1 = [rho, phi1, theta1]
+spc2 = [rho, phi2, theta2]
+spc3 = [rho, phi3, theta3]
+spc4 = [rho, phi4, theta4]
+spc5 = [rho, phi5, theta5]
+spc6 = [rho, phi6, theta6]
+spc7 = [rho, phi7, theta7]
+spc8 = [rho, phi8, theta8]
+spc9 = [rho, phi9, theta9]
+spc10 = [rho, phi10, theta10]
+spc11 = [rho, phi11, theta11]
+
+pc1 = [rho, phi2, theta3]
+pc2 = [rho, phi1, theta2]
+pc3 = [rho, phi4, theta1]
+pc4 = [rho, phi3, theta6]
+pc5 = [rho, phi6, theta5]
+pc6 = [rho, phi7, theta4]
+pc7 = [rho, phi8, theta9]
+pc8 = [rho, phi7, theta8]
+pc9 = [rho, phi10, theta7]
+pc10 = [rho, phi9, theta11]
+pc11 = [rho, phi11, theta10]
 
 
-def calculate_coordinates():
+
+
+def calculate_coordinates2(spc_list):
     """
 
     :return:
     """
-    spc1 = [26570, np.divide(np.pi, 9), np.divide(np.pi, 3)]
-    spc2 = [26570, np.divide(np.pi, 7), np.pi]
-    spc3 = [26570, np.divide(np.pi, 5), 3*(np.divide(np.pi, 2))]
-    spc4 = [26570, np.divide(np.pi, 3), 2*np.pi]
 
-    spc_list = [spc1, spc2, spc3, spc4]
     coordinate_matrix = []
 
     for i in range(len(spc_list)):
@@ -86,12 +139,37 @@ def calculate_coordinates():
 
     return np.array(coordinate_matrix).astype(np.float64)
 
+
+def calculate_coordinates():
+    """
+    AKTIVITET 4
+
+    :return:
+    """
+    # aspc1 = [26570, np.divide(np.pi, 9), np.divide(np.pi, 3)]
+    # aspc2 = [26570, np.divide(np.pi, 7), np.pi]
+    # aspc3 = [26570, np.divide(np.pi, 5), 3*(np.divide(np.pi, 2))]
+    # aspc4 = [26570, np.divide(np.pi, 3), 2*np.pi]
+
+    aspc_list = [spc1, spc2, spc3, spc4]
+    coordinate_matrix = []
+
+    for i in range(len(aspc_list)):
+        a = aspc_list[i][0] * np.cos(aspc_list[i][1]) * np.cos(aspc_list[i][2])
+        b = aspc_list[i][0] * np.cos(aspc_list[i][1]) * np.sin(aspc_list[i][2])
+        c = aspc_list[i][0] * np.sin(aspc_list[i][1])
+        r = np.sqrt(pow(a, 2) + pow(b, 2) + pow((c - 6370), 2))
+        t = 0.0001 + np.divide(r, 299792.458)
+        coordinate_matrix.append([a, b, c, t])
+
+    return np.array(coordinate_matrix).astype(np.float64)
+
 #  gir maksimal posisjonsfeil
 
 
 def max_output_error(coordinate_matrix,  start_estimate, actual_xyz, e, newton_iterations):
     """
-Gir
+    Gir
     :param coordinate_matrix:
     :param start_estimate:
     :param actual_xyz:
@@ -145,24 +223,115 @@ def multi_newton(estimate, coordinate_matrix, number_of_iterations):
     """
 
     return_list = fun1(estimate, coordinate_matrix)
-    print(return_list[0])
-    print(return_list[1])
+    # print(return_list[0])
+    # print(return_list[1])
     for i in range(0, number_of_iterations):
-        s = np.linalg.solve(return_list[1], return_list[0])
-
-        estimate = np.subtract(estimate, s)
+        #  s = np.linalg.solve(return_list[1], return_list[0])  !!!!!!
+        x = np.linalg.lstsq(return_list[1], return_list[0])
+        estimate = np.subtract(estimate, x[0])
         return_list = fun1(estimate, coordinate_matrix)
     return estimate
 
 
-e = pow(10, -8)
-coordinates = calculate_coordinates()
-output_error = max_output_error(coordinates, [0, 0, 0, 0], [0, 0, 6370], e, 10)
-input_error = e * 299792.458
-result = np.divide(output_error, input_error)
-print("{}km / {}km = {}".format(output_error, input_error, result))
-print(calculate_coordinates())
-# output_error = max_error(matr1, matr2, matr3, matr4, 10)
-# input_error = pow(10, -8) * 299792458
+def the_satellite_question():
+    #  sat_list = [spc1, spc2, spc3, spc4, spc5, spc6, spc7, spc8, spc9, spc10, spc11]
+    sat_list = [pc1, pc2, pc3, pc4, pc5, pc6, pc7, pc8, pc9, pc10, pc11]
+
+    eleven_sat_coordinates = calculate_coordinates2(sat_list)
+    guess = [0, 0, 0, 0]
+    actual_xyz = [0, 0, 6370]
+    e = pow(10, -8)
+    eleven_sat_output = max_output_error(eleven_sat_coordinates, guess, actual_xyz, e, 10)
+    best_four_output = 10
+    best_sat_nums = []
+    best_sat_coordinates = []
+
+    print("---Satellite coordinates---")
+    for i in range(len(sat_list)):
+        print("{}: {}".format(i, sat_list[i]))
+    print("\n----OUTPUT----\n")
+
+    for i in range(0, len(sat_list) - 3):
+        for j in range(i+1, len(sat_list) - 2):
+            for k in range(j+1, len(sat_list) - 1):
+                for l in range(k+1, len(sat_list) - 0):
+                    four_sat_list = [sat_list[i], sat_list[j], sat_list[k], sat_list[l]]
+                    four_sat_coordinates = calculate_coordinates2(four_sat_list)
+                    four_sat_output = max_output_error(four_sat_coordinates, guess, actual_xyz, e, 10)
+                    print("----{},{},{},{}----".format(i, j, k, l))
+                    print("output_error:{}\ndif:{}\n"
+                          .format(four_sat_output, (four_sat_output - eleven_sat_output)))
+                    if four_sat_output <= best_four_output:
+                        best_four_output = four_sat_output
+                        best_sat_nums = [i, j, k, l]
+                        best_sat_coordinates = four_sat_coordinates
+
+    print("Eleven sat output:{}".format(eleven_sat_output))
+    print("Best four sat output:{}".format(best_four_output))
+    print("Best four sat - eleven sat: = {}{}".format((best_four_output - eleven_sat_output), " (negative = better)"))
+    print("Satellite numbers: {}".format(best_sat_nums))
+    print("Satellite coordinates: {}".format(best_sat_coordinates))
+
+
+def tight_satellites(err):
+    phi = np.divide(np.pi, 4)
+    theta = np.pi
+
+    phi_list = [phi, (phi + np.multiply(phi, 0.025)), (phi + np.multiply(phi, -0.025)), (phi + np.multiply(phi, 0.02))]
+    theta_list = [
+        theta,
+        (theta + np.multiply(theta1, 0.01)),
+        (theta + np.multiply(theta, 0.02)),
+        (theta + np.multiply(theta, -0.015))
+    ]
+    sat_list = []
+
+    for i in range(4):
+        sat_list.append([rho, phi_list[i], theta_list[i]])
+
+    coordinates = calculate_coordinates2(sat_list)
+    return max_output_error(coordinates, [0, 0, 0, 0], [0, 0, 6370], err, 10)
+
+# e = pow(10, -8)
+# input_error = e * 299792.458
+# output_with_error = tight_satellites(e)
+# emf_with_error = np.divide(output_with_error, input_error)
+# print("Maximum position error (with e) = {}".format(output_with_error))
+# print("EMF (with e) = {}".format(emf_with_error))
+# print("")
+#
+# output_no_error = tight_satellites(0)
+# emf_no_error = np.divide(output_no_error, input_error)
+# print("Maximum position error (no e) = {}".format(output_no_error))
+# print("EMF (no e) = {}".format(emf_no_error))
+
+
+
+
+# # phi2 = phi1 + np.multiply(phi1, 0.025)
+# # phi3 = phi1 - np.multiply(phi1, 0.025)
+# # phi4 = phi1 + np.multiply(phi1, 0.04)
+# #
+# # theta1 = np.pi
+# # theta2 = theta1 + np.multiply(theta1, 0.01)
+# # theta3 = theta1 + np.multiply(theta1, 0.03)
+# # theta4 = theta1 - np.multiply(theta1, 0.05)
+
+# the_satellite_question()
+
+
+# print("{}km / {}km = {}".format(output_error, input_error, result))
+spc_list = [spc1, spc2, spc3, spc4]
+akt1_list = [[15600, 7540, 20140, 0.07074],
+             [18760, 2750, 18610, 0.07220],
+             [17610, 14630, 13480, 0.07690],
+             [19170, 610, 18390, 0.07242]]
+akt1_result = multi_newton([0, 0, 6370, 0], akt1_list, 10)
+print(akt1_result)
+
+# coordinates = calculate_coordinates2(spc_list)
+# output_error = max_output_error(coordinates, [0, 0, 0, 0], [0, 0, 6370], e, 10)
+# input_error = e * 299792.458
 # result = np.divide(output_error, input_error)
-# print("{}m/{}m = {}".format(output_error, input_error, result))
+# print("{}km / {}km = {}".format(output_error, input_error, result))
+# print(calculate_coordinates2(spc_list))

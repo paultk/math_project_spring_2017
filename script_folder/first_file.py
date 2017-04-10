@@ -188,10 +188,10 @@ def task_2():
 
     # quadratic equation variables
     quadratic_a = (Ddeterminent/Xdeterminent) ** 2 + (D2determinant / Ydeterminant) ** 2 + (D3Determinent / zDeterminent) ** 2 - \
-          speed_of_light ** 2
+                  speed_of_light ** 2
     quadratic_b = 2 * (Ddeterminent / Xdeterminent) * (Wdeterminent / Xdeterminent + c[0, 0]) + 2 * (D2determinant / Ydeterminant) * \
-                                                                              (W2determinant / Ydeterminant + c[0,1]) + 2 * (D3Determinent / zDeterminent) * (W3Determinent / zDeterminent +c[0, 2]) + \
-          2 * speed_of_light ** 2 * c[0, 3]
+                                                                                                (W2determinant / Ydeterminant + c[0,1]) + 2 * (D3Determinent / zDeterminent) * (W3Determinent / zDeterminent +c[0, 2]) + \
+                  2 * speed_of_light ** 2 * c[0, 3]
     quadratic_c = (Wdeterminent / Xdeterminent + c[0, 0]) ** 2 + (W2determinant / Ydeterminant + c[0, 1]) ** 2 + (W3Determinent / zDeterminent + c[0, 2]) ** 2 - speed_of_light **2 *c[0,3] ** 2
 
 
@@ -236,10 +236,10 @@ def task_3():
         Uz[i] = 2 * c[i + 1, 2] - 2 * c[0, 2]
         D[i] = 2 * ((speed_of_light ** 2) * (c[0, 3] - c[i + 1, 3]))
 
-        w[i] = c[0, 0] **2 -\
-               c[i + 1, 0] **2 + c[0, 1] **2 -\
-                c[i + 1, 1] **2 +c[0, 2] **2 -\
-                c[i + 1, 2] **2 + (speed_of_light **2 * c[i + 1, 3] **2) -\
+        w[i] = c[0, 0] **2 - \
+               c[i + 1, 0] **2 + c[0, 1] **2 - \
+               c[i + 1, 1] **2 +c[0, 2] **2 - \
+               c[i + 1, 2] **2 + (speed_of_light **2 * c[i + 1, 3] **2) - \
                (speed_of_light **2 * c[0,3] **2)
 
     # solve for x in terms of D
